@@ -6,11 +6,13 @@ todo_router = APIRouter()
 
 todo_list = []
 
+##
+MESSAGE = "message"
 
 @todo_router.post("/todo")
 async def add_todo(data: model.Todo) -> dict:
     todo_list.append(data)
-    return {"message": "Todo added succesfully"}
+    return {MESSAGE: "Todo added succesfully"}
 
 
 @todo_router.get("/todo")
@@ -26,5 +28,19 @@ async def get_single_todo(todo_id: int = Path(..., title="The ID of the todo to 
                 "todo": _todo
             }
     return {
-        "message": "Todo with supplied ID doesn't exist."
+        MESSAGE: "Todo with supplied ID doesn't exist."
+    }
+
+
+@todo_router.put("/todo/{todo_id}")
+async def update_todo(todo_data: model.TodoItem, todo_id: int = Path(..., title="The ID of the todo to be updated")) -> dict:
+    for _todo in todo_list:
+        _todo : model.Todo
+        if _todo.id == todo_id:
+            _todo.item = todo_data.item
+            return {
+                MESSAGE: "Todo updated successfully."
+            }
+    return {
+        MESSAGE: "Todo with supplied ID doesn't exist."
     }
